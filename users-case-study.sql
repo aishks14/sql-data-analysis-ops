@@ -141,3 +141,29 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
             MIN(LOGIN_TIMESTAMP) as QUARTER_FIRST_LOGIN
             from logins
             group by DATEPART(QUARTER, LOGIN_TIMESTAMP);
+
+            -- STEP 4: Total sessions in each quarter along with the first login date of each quarter and adding the starting date of each quarter in the data
+            select DATEPART(QUARTER, LOGIN_TIMESTAMP) as QUARTER_NUMBER, 
+            COUNT(*) as SESSION_CNT,
+            COUNT(distinct USER_ID) as USER_CNT,
+            MIN(LOGIN_TIMESTAMP) as QUARTER_FIRST_LOGIN,
+            DATETRUNC(QUARTER, MIN(LOGIN_TIMESTAMP)) as FIRST_QUARTER_DATE
+            from logins
+            group by DATEPART(QUARTER, LOGIN_TIMESTAMP);
+
+            -- STEP 4: Refined query as per the requirement
+            select DATETRUNC(QUARTER, MIN(LOGIN_TIMESTAMP)) as FIRST_QUARTER_DATE, 
+            COUNT(*) as SESSION_CNT,
+            COUNT(distinct USER_ID) as USER_CNT
+            from logins
+            group by DATEPART(QUARTER, LOGIN_TIMESTAMP);
+
+            -- STEP 4: (Optional) Getting same details as previous queries but month wise
+            select DATEPART(MONTH, LOGIN_TIMESTAMP) as MONTH_NUMBER, 
+            COUNT(*) as SESSION_CNT,
+            COUNT(distinct USER_ID) as USER_CNT,
+            MIN(LOGIN_TIMESTAMP) as MONTH_FIRST_LOGIN
+            from logins
+            group by DATEPART(MONTH, LOGIN_TIMESTAMP);
+
+    ------------------------------------------------------------------------------------------------------
