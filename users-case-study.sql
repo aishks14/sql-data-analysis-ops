@@ -167,3 +167,26 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
             group by DATEPART(MONTH, LOGIN_TIMESTAMP);
 
     ------------------------------------------------------------------------------------------------------
+    -- Q3: Display user id's that logged-in in March 2026 and did not log-in in November 2025  
+        -- Return: USER_ID
+            -- STEP 1: Get the users logged-in in March 2026
+            select * FROM logins 
+            where LOGIN_TIMESTAMP between '2026-03-01' and '2026-03-31';
+
+            -- STEP 2: Get the users logged-in in November 2025
+            select * FROM logins 
+            where LOGIN_TIMESTAMP between '2025-11-01' and '2025-11-30';
+
+            -- STEP 3: Get the users who logged-in in March 2026 but did not log-in in November 2025
+            select distinct * FROM logins 
+            where LOGIN_TIMESTAMP between '2026-03-01' and '2026-03-31'
+            and USER_ID not in (select USER_ID FROM logins 
+            where LOGIN_TIMESTAMP between '2025-11-01' and '2025-11-30');
+
+            -- STEP 4: Refined query of STEP 3 as per the requirement
+            select distinct USER_ID FROM logins 
+            where LOGIN_TIMESTAMP between '2026-03-01' and '2026-03-31'
+            and USER_ID not in (select USER_ID FROM logins 
+            where LOGIN_TIMESTAMP between '2025-11-01' and '2025-11-30');
+
+    ------------------------------------------------------------------------------------------------------
