@@ -119,6 +119,7 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
             (select USER_ID 
             from logins
             where LOGIN_TIMESTAMP > DATEADD(MONTH, -1, GETDATE()));
+            
     ------------------------------------------------------------------------------------------------------
     -- Q2: For the business units quarterly analysis, calculate how many sessions were at each quarter.
         -- order by quarter from newest to oldest
