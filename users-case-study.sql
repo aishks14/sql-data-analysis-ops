@@ -191,3 +191,38 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
             where LOGIN_TIMESTAMP between '2025-11-01' and '2025-11-30');
 
     ------------------------------------------------------------------------------------------------------
+
+    -- Q4: Add to the query from 2 the percentage change in sessions from last quarter
+        -- Return: First day of the quarter, session_cnt, session_cnt_prev, session_percent_change
+            -- STEP 1: Get the final query from Q2
+            select DATETRUNC(QUARTER, MIN(LOGIN_TIMESTAMP)) as FIRST_QUARTER_DATE, 
+            COUNT(*) as SESSION_CNT,
+            COUNT(distinct USER_ID) as USER_CNT
+            from logins
+            group by DATEPART(QUARTER, LOGIN_TIMESTAMP)
+            order by FIRST_QUARTER_DATE;
+
+            -- STEP 2: get previous quarter session counts
+            with cte as (
+            select DATETRUNC(QUARTER, MIN(LOGIN_TIMESTAMP)) as FIRST_QUARTER_DATE, 
+            COUNT(*) as SESSION_CNT,
+            COUNT(distinct USER_ID) as USER_CNT
+            from logins
+            group by DATEPART(QUARTER, LOGIN_TIMESTAMP))
+            
+            select * , LAG(SESSION_CNT, 1) over(order by FIRST_QUARTER_DATE) as PREV_SESSION_CNT
+            from cte;
+
+            -- STEP 3: get previous quarter session counts along with the percentage change in sessions
+            with cte as (
+            select DATETRUNC(QUARTER, MIN(LOGIN_TIMESTAMP)) as FIRST_QUARTER_DATE, 
+            COUNT(*) as SESSION_CNT,
+            COUNT(distinct USER_ID) as USER_CNT
+            from logins
+            group by DATEPART(QUARTER, LOGIN_TIMESTAMP))
+            
+            select * , LAG(SESSION_CNT, 1) over(order by FIRST_QUARTER_DATE) as PREV_SESSION_CNT, 
+            (SESSION_CNT - (LAG(SESSION_CNT, 1) over(order by FIRST_QUARTER_DATE))) * 100.0 / (LAG(SESSION_CNT, 1) over(order by FIRST_QUARTER_DATE)) as SESSION_PERCENT_CHANGE
+            from cte;
+
+    ------------------------------------------------------------------------------------------------------
