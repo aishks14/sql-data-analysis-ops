@@ -226,3 +226,35 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
             from cte;
 
     ------------------------------------------------------------------------------------------------------
+
+    -- Q5: Display the user that had the highest session score (max) for each day
+    -- Return: Date, user_id, score 
+
+        -- STEP 1:
+        select USER_ID, CAST(LOGIN_TIMESTAMP as date) as LOGIN_DATE, 
+        SUM(SESSION_SCORE) as SCORE
+        from logins
+        group by USER_ID, CAST(LOGIN_TIMESTAMP as date);
+
+        -- STEP 2: added order by
+        select USER_ID, CAST(LOGIN_TIMESTAMP as date) as LOGIN_DATE, 
+        SUM(SESSION_SCORE) as SCORE
+        from logins
+        group by USER_ID, CAST(LOGIN_TIMESTAMP as date)
+        order by CAST(LOGIN_TIMESTAMP as date), SCORE
+
+        -- STEP 3: final query
+        with cte as (
+            select USER_ID, CAST(LOGIN_TIMESTAMP as date) as LOGIN_DATE, 
+            SUM(SESSION_SCORE) as SCORE
+            from logins
+            group by USER_ID, CAST(LOGIN_TIMESTAMP as date)
+        )
+        select * from (
+            select *, ROW_NUMBER() over (partition by LOGIN_DATE order by SCORE desc) as USER_RANK
+            from cte
+        ) a
+        where USER_RANK = 1;
+
+    ------------------------------------------------------------------------------------------------------
+
