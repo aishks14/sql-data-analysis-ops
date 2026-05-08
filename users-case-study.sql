@@ -260,4 +260,3 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
         -- Then ROW_NUMBER with PARTITION BY assigns rankings within each date group based on score, 
         -- and finally the top-ranked user for each date is selected.
     ------------------------------------------------------------------------------------------------------
-
