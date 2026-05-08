@@ -256,5 +256,8 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
         ) a
         where USER_RANK = 1;
 
+        -- The query first aggregates session scores per user per date using a CTE. 
+        -- Then ROW_NUMBER with PARTITION BY assigns rankings within each date group based on score, 
+        -- and finally the top-ranked user for each date is selected.
     ------------------------------------------------------------------------------------------------------
 
