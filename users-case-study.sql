@@ -27,6 +27,7 @@ INSERT INTO USERS  VALUES (7, 'Grace', 'Inactive');
 INSERT INTO USERS  VALUES (8, 'Heidi', 'Active');
 INSERT INTO USERS VALUES (9, 'Ivan', 'Inactive');
 INSERT INTO USERS VALUES (10, 'Judy', 'Active');
+INSERT INTO USERS VALUES (11, 'Michael', 'Active');
 
 -- Inserting data into logins table
 INSERT INTO LOGINS VALUES (1, '2025-07-15 09:30:00', 1001, 85);
@@ -64,7 +65,42 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
 INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (4, '2025-11-25 09:30:00', 1202, 84);
 INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (6, '2025-11-15 11:00:00', 1203, 80);
 
+INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (11, '2026-05-01 11:00:00', 1243, 95);
+INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (11, '2025-11-15 11:00:00', 1204, 80);
+INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (11, '2025-11-15 11:00:00', 1210, 85);
+INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (11, '2025-11-15 11:00:00', 1220, 99);
+INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (11, '2025-11-15 11:00:00', 1235, 78);
+INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (11, '2025-11-15 11:00:00', 1240, 92);
+INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES (11, '2025-11-15 11:00:00', 1261, 87);
 
+-- Updating queries for problem 6. This was done later in the and not in the starting of the project.
+UPDATE LOGINS
+SET LOGIN_TIMESTAMP = '2026-05-02 14:25:40'
+WHERE SESSION_ID = 1243;
+
+UPDATE LOGINS
+SET LOGIN_TIMESTAMP = '2026-05-03 09:14:22'
+WHERE SESSION_ID = 1204;
+
+UPDATE LOGINS
+SET LOGIN_TIMESTAMP = '2026-05-04 10:48:35'
+WHERE SESSION_ID = 1210;
+
+UPDATE LOGINS
+SET LOGIN_TIMESTAMP = '2026-05-05 12:05:41'
+WHERE SESSION_ID = 1220;
+
+UPDATE LOGINS
+SET LOGIN_TIMESTAMP = '2026-05-06 14:27:18'
+WHERE SESSION_ID = 1235;
+
+UPDATE LOGINS
+SET LOGIN_TIMESTAMP = '2026-05-07 16:11:09'
+WHERE SESSION_ID = 1240;
+
+UPDATE LOGINS
+SET LOGIN_TIMESTAMP = '2026-05-08 18:39:54'
+WHERE SESSION_ID = 1261;
 -- SQL complete case study with the use of users database and 2 tables - `users` and `logins`
 
     -- SQL query to get all the users data stored inside the `users` table
@@ -259,4 +295,45 @@ INSERT INTO LOGINS (USER_ID, LOGIN_TIMESTAMP, SESSION_ID, SESSION_SCORE) VALUES 
         -- The query first aggregates session scores per user per date using a CTE. 
         -- Then ROW_NUMBER with PARTITION BY assigns rankings within each date group based on score, 
         -- and finally the top-ranked user for each date is selected.
+    ------------------------------------------------------------------------------------------------------
+
+    -- Q6 : To identiy the best users - Return the users that had a session on every single day since their first login 
+    -- make assumptions if needed 
+    -- Return: user_id
+
+        -- STEP 1: show all data from logins table order by user_id
+        select * from logins
+        order by user_id;
+
+        -- STEP 2: make order by a combination of user_id and login_timestamp to get unique ordering
+        select * from logins
+        order by user_id, LOGIN_TIMESTAMP;
+
+        -- STEP 3: Find the first user login date
+        select USER_ID, MIN(CAST(LOGIN_TIMESTAMP as date)) as FIRST_LOGIN_DATE
+        from logins
+        group by USER_ID
+        order by USER_ID
+
+        -- STEP 3: Check difference of days from current date till user first login in past
+        select USER_ID, MIN(CAST(LOGIN_TIMESTAMP as date)) as FIRST_LOGIN_DATE, 
+        DATEDIFF(day, MIN(CAST(LOGIN_TIMESTAMP as date)), GETDATE())+1 as NO_OF_REQUIRED_LOGIN_DAYS,
+        COUNT(distinct CAST(LOGIN_TIMESTAMP as date)) as NO_OF_LOGIN_DAYS
+        from logins
+        group by USER_ID    
+        order by USER_ID
+
+        -- STEP 4: final query
+        select USER_ID, MIN(CAST(LOGIN_TIMESTAMP as date)) as FIRST_LOGIN_DATE, 
+        DATEDIFF(day, MIN(CAST(LOGIN_TIMESTAMP as date)), GETDATE())+1 as NO_OF_REQUIRED_LOGIN_DAYS,
+        COUNT(distinct CAST(LOGIN_TIMESTAMP as date)) as NO_OF_LOGIN_DAYS
+        from logins
+        group by USER_ID  
+        having DATEDIFF(day, MIN(CAST(LOGIN_TIMESTAMP as date)), GETDATE())+1 = COUNT(distinct CAST(LOGIN_TIMESTAMP as date))
+        order by USER_ID
+
+        -- Query above shows users who have logged in every single day continuously from their first login date until today
+        -- Taking today's date as 2026-05-08. If later checked at any point of time in future, this needs to be updated or query will return data as per details passed,
+        -- which might not be similar as it is today.
+
     ------------------------------------------------------------------------------------------------------
