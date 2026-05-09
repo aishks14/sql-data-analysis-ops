@@ -260,6 +260,11 @@ Possible future enhancements:
 
 ---
 
+# Closing Note
+SQL Analytics Case Study Project created for practicing advanced SQL concepts and real-world analytical problem solving using SQL Server.
+
+---
+
 # Author
 
-SQL Analytics Case Study Project created for practicing advanced SQL concepts and real-world analytical problem solving using SQL Server.
+Aishwarya Kumar Singh
