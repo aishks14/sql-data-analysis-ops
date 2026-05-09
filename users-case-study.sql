@@ -323,7 +323,7 @@ WHERE SESSION_ID = 1261;
         group by USER_ID    
         order by USER_ID
 
-        -- STEP 4: final query
+        -- STEP 4: Final query
         select USER_ID, MIN(CAST(LOGIN_TIMESTAMP as date)) as FIRST_LOGIN_DATE, 
         DATEDIFF(day, MIN(CAST(LOGIN_TIMESTAMP as date)), GETDATE())+1 as NO_OF_REQUIRED_LOGIN_DAYS,
         COUNT(distinct CAST(LOGIN_TIMESTAMP as date)) as NO_OF_LOGIN_DAYS
@@ -337,3 +337,31 @@ WHERE SESSION_ID = 1261;
         -- which might not be similar as it is today.
 
     ------------------------------------------------------------------------------------------------------
+
+    -- Q7 : Tell the dates which do not see any log-ins at all
+    -- Return : login_date
+        -- STEP 1: Get details from logins table based on filtering the login_timestamp in asc order
+        select * 
+        from logins
+        order by LOGIN_TIMESTAMP
+
+        -- STEP 2: Finding first login date of any user in the system and the last login date of any user in the same system
+        select CAST(MIN(LOGIN_TIMESTAMP) as date) as first_system_login,
+        CAST(GETDATE() as date) as last_system_login
+        from logins
+
+        -- STEP 3: Finfing no login dates between all logins from first login of any user till date
+        with cte as (
+            select CAST(MIN(LOGIN_TIMESTAMP) as date) as first_system_login,
+            CAST(GETDATE() as date) as last_system_login
+            from logins
+            union all 
+            select DATEADD(day, 1, first_system_login) as first_system_login, last_system_login from cte
+            where first_system_login < last_system_login
+        )
+        select * from cte
+        where first_system_login not in 
+        (select distinct CAST(LOGIN_TIMESTAMP as date) from logins)
+        option(maxrecursion 500);
+
+        ------------------------------------------------------------------------------------------------------
